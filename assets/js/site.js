@@ -4,8 +4,8 @@ const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 const lang = (document.documentElement.lang || "pt").toLowerCase().startsWith("en") ? "en" : "pt";
 const tx = v => typeof v === "string" ? v : (v && (v[lang] || v.pt)) || "";
 const L = {
-  pt:{works:"vídeos",work:"vídeo",open:"Abrir",watchYT:"Assistir no YouTube",loading:"Carregando o vídeo…",role:"Função",artist:"Artista",prod:"Produção",close:"Fechar",sent:"Recebi sua mensagem. Respondo em até 24 horas.",fail:"Não consegui enviar por aqui. Abri seu e-mail com a mensagem pronta.",sending:"Enviando…",count:n=>n===1?"1 vídeo":`${n} vídeos`},
-  en:{works:"videos",work:"video",open:"Open",watchYT:"Watch on YouTube",loading:"Loading video…",role:"Role",artist:"Artist",prod:"Production",close:"Close",sent:"Got your message. I reply within 24 hours.",fail:"Couldn't send from here. I opened your email app with the message ready.",sending:"Sending…",count:n=>n===1?"1 video":`${n} videos`}
+  pt:{works:"vídeos",work:"vídeo",open:"Abrir",watchYT:"Assistir no YouTube",loading:"Carregando o vídeo…",role:"Função",artist:"Artista",prod:"Produção",close:"Fechar",sent:"Recebi sua mensagem. Respondo em até 24 horas.",fail:"Não consegui enviar agora. Seus dados continuam aqui: toque em Enviar de novo.",sending:"Enviando…",retry:"Enviar de novo",send:"Enviar pedido",count:n=>n===1?"1 vídeo":`${n} vídeos`},
+  en:{works:"videos",work:"video",open:"Open",watchYT:"Watch on YouTube",loading:"Loading video…",role:"Role",artist:"Artist",prod:"Production",close:"Close",sent:"Got your message. I reply within 24 hours.",fail:"Couldn't send right now. Your details are still here: tap Send again.",sending:"Sending…",retry:"Send again",send:"Send request",count:n=>n===1?"1 video":`${n} videos`}
 }[lang];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -270,22 +270,27 @@ if(form){
     if(!form.reportValidity()) return;
     const data = Object.fromEntries(new FormData(form));
     if(data._honey) return;
-    const body = Object.entries(data).filter(([k]) => !k.startsWith("_")).map(([k, v]) => `${k}: ${v}`).join("\n");
-    const fallback = () => { st.className = "form-status err"; st.textContent = L.fail;
-      location.href = `mailto:${S.email}?subject=${encodeURIComponent("Orçamento pelo site")}&body=${encodeURIComponent(body)}`; };
-    // resposta na hora: o pedido segue em segundo plano (keepalive) e só volta atrás se o envio falhar
-    btn.disabled = true; btn.classList.add("is-sent");
-    st.className = "form-status ok"; st.textContent = L.sent;
+    // tudo acontece aqui no site: resposta na hora e, se o envio falhar, os dados ficam no formulário para tentar de novo
+    btn.disabled = true; btn.classList.add("is-sent"); btn.textContent = L.sending;
+    st.className = "form-status"; st.textContent = "";
+    // envio "simples" (FormData, sem JSON): não precisa da consulta prévia do navegador, então chega mais rápido
+    const fd = new FormData(form);
+    fd.delete("_honey");
+    fd.append("_subject", `Orçamento pelo site · ${data.tipo || ""}`);
+    fd.append("_template", "table");
+    fd.append("_captcha", "false");
     const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 15000);
+    let ok = false;
     try{
-      const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, signal: ctrl.signal,
-        headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...data, _subject: `Orçamento pelo site · ${data.tipo || ""}`, _template: "table", _captcha: "false" }) });
+      const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, signal: ctrl.signal, headers: { Accept: "application/json" }, body: fd });
       const j = await r.json().catch(() => ({}));
-      if(!r.ok || String(j.success) !== "true") throw new Error(j.message || r.status);
-      form.reset();
-    }catch(err){ fallback(); }
-    finally{ clearTimeout(timer); setTimeout(() => { btn.disabled = false; btn.classList.remove("is-sent"); }, 4000); }
+      ok = r.ok && String(j.success) === "true";
+      if(!ok) console.warn("Envio do orçamento:", r.status, j.message || "");
+    }catch(err){ console.warn("Envio do orçamento:", err); }
+    clearTimeout(timer);
+    btn.disabled = false; btn.classList.remove("is-sent");
+    if(ok){ form.reset(); btn.textContent = L.send; st.className = "form-status ok"; st.textContent = L.sent; }
+    else{ st.className = "form-status err"; st.textContent = L.fail; btn.textContent = L.retry; }
   });
 }
 
