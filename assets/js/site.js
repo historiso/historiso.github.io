@@ -158,7 +158,8 @@ if(heroWrap && hero){
     lines.forEach((l, i) => {
       if(reduce) return;
       const lp = Math.min(1, Math.max(0, (p - i * .06) / .5)), e = ease(lp);
-      l.style.transform = `translateY(${(-e * (30 + i * 14)).toFixed(1)}px)`;
+      // "translate" (e não "transform"): o glitch anima o transform e não pode desfazer a subida da linha
+      l.style.translate = `0 ${(-e * (30 + i * 14)).toFixed(1)}px`;
       l.style.fontVariationSettings = `"wdth" ${(100 + caps[i] * e).toFixed(1)}`;
       if(lp > .02 && lp < 1 && !l._g){ l._g = 1; glitch(l); } if(lp === 0) l._g = 0;
     });
