@@ -34,8 +34,13 @@ T = {
   },
 }
 
-def head(lang, title, desc, prefix):
+def page_url(fn, lang="pt"):
+    path = ("" if lang == "pt" else "en/") + ("" if fn == "index.html" else fn)
+    return f"{SITE_URL}/{path}"
+
+def head(lang, title, desc, prefix, fn="index.html", extra=""):
     og = (SITE_URL + "/assets/img/og.jpg") if SITE_URL else f"{prefix}assets/img/og.jpg"
+    url = page_url(fn, lang)
     return f"""<!DOCTYPE html>
 <html lang="{'pt-BR' if lang=='pt' else 'en'}">
 <head>
@@ -43,11 +48,19 @@ def head(lang, title, desc, prefix):
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{html.escape(title)}</title>
 <meta name="description" content="{html.escape(desc)}">
+<link rel="canonical" href="{url}">{GSC_META}
+<meta name="author" content="Carlos Raimundo">
 <meta property="og:title" content="{html.escape(title)}">
 <meta property="og:description" content="{html.escape(desc)}">
 <meta property="og:type" content="website">
+<meta property="og:url" content="{url}">
+<meta property="og:site_name" content="Carlos Raimundo · Filmmaker e editor">
+<meta property="og:locale" content="{'pt_BR' if lang=='pt' else 'en_US'}">
 <meta property="og:image" content="{og}">
-<meta name="theme-color" content="#0B0612">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="theme-color" content="#0B0612">{extra}
 <link rel="icon" href="{prefix}assets/img/favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -116,7 +129,7 @@ PAGES["index.html"] = {"key": "home",
     <div class="bar t"></div><div class="bar b"></div>
     <div class="hud t"><span>▶ PLAY</span><span class="rec hide-sm">REC</span><span data-tc>SP 0:00:00</span></div>
     <div class="hero-copy">
-      <h1><span class="line glitch" data-text="Histórias">Histórias</span><span class="line glitch" data-text="em emoção">em emoção</span><span class="line acc glitch" data-text="e ritmo.">e ritmo.</span></h1>
+      <h1><span class="sr-only">Carlos Raimundo, filmmaker e editor de vídeo em Goiânia: </span><span class="line glitch" data-text="Histórias">Histórias</span> <span class="line glitch" data-text="em emoção">em emoção</span> <span class="line acc glitch" data-text="e ritmo.">e ritmo.</span></h1>
       <blockquote class="hero-quote">“Uma boa montagem faz um filme parecer bem dirigido. Uma excepcional montagem faz o filme parecer que não foi dirigido.”<footer>— WALTER MURCH</footer></blockquote>
       <div class="actions"><button class="btn" type="button" data-reel-open><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>Ver showreel</button><a class="btn ghost" href="trabalhos.html">Ver trabalhos</a></div>
     </div>
@@ -241,7 +254,7 @@ PAGES["sobre.html"] = {"key": "about",
   <div class="glow" style="width:600px;height:600px;right:-200px;top:-200px"></div>
   <div class="wrap" style="position:relative">
     <p class="crumbs">● REC · SOBRE</p>
-    <h1>{g("Prazer,")}<br><span class="acc">{g("Carlos.")}</span></h1>
+    <h1>{g("Prazer,")} <br><span class="acc">{g("Carlos.")}</span></h1>
     <p class="lede">Um profissional que transforma história em emoção e ritmo.</p>
   </div>
 </section>
@@ -338,7 +351,7 @@ PAGES["orcamento.html"] = {"key": "quote",
   <div class="glow" style="width:600px;height:600px;right:-200px;top:-200px"></div>
   <div class="wrap" style="position:relative">
     <p class="crumbs">● REC · ORÇAMENTO</p>
-    <h1>{g("Vamos")}<br><span class="acc">{g("filmar?")}</span></h1>
+    <h1>{g("Vamos")} <br><span class="acc">{g("filmar?")}</span></h1>
     <p class="lede">Conte o que você precisa. Quanto mais detalhes, mais certa sai a proposta. Respondo em até 24 horas.</p>
   </div>
 </section>
@@ -368,6 +381,89 @@ PAGES["orcamento.html"] = {"key": "quote",
 </section>
 """, "en": None}}
 
+# ------------------------------------------------------------------ SEO
+# Títulos e descrições pensados para as buscas (ex.: "filmmaker Goiânia", "filmagem de casamento Goiânia").
+SEO = {
+  "index.html": ("Carlos Raimundo · Filmmaker e Editor de Vídeo em Goiânia",
+                 "Filmmaker e editor de vídeo em Goiânia. Filmagem e edição de casamentos, 15 anos, formaturas, videoclipes, documentários e reels. Veja o showreel e peça seu orçamento."),
+  "trabalhos.html": ("Portfólio de Vídeos · Carlos Raimundo, Filmmaker em Goiânia",
+                 "Portfólio de Carlos Raimundo: filmes de casamento, 15 anos, formatura, videoclipes, documentários e reels, separados por tipo de trabalho."),
+  "trabalhos-filmes.html": ("Videoclipes e Documentários · Carlos Raimundo",
+                 "Curtas, documentários e videoclipes de Carlos Raimundo, filmmaker em Goiânia, com dois prêmios em festivais de cinema."),
+  "trabalhos-casamentos.html": ("Filmes de Casamento em Goiânia · Carlos Raimundo",
+                 "Save the date, prévia, same day e trailer de casamentos filmados e editados por Carlos Raimundo, filmmaker em Goiânia."),
+  "trabalhos-15-anos.html": ("Filmes de 15 Anos em Goiânia · Carlos Raimundo",
+                 "Save the date, entrada, same day e trailer de festas de 15 anos filmados e editados por Carlos Raimundo em Goiânia."),
+  "trabalhos-formatura.html": ("Filme de Formatura · Carlos Raimundo, Filmmaker em Goiânia",
+                 "Same day de formatura editado durante a festa por Carlos Raimundo, filmmaker e editor de vídeo em Goiânia."),
+  "trabalhos-verticais.html": ("Reels e Vídeos Verticais · Carlos Raimundo",
+                 "Reels, anúncios para tráfego pago e vídeos verticais para marcas e redes sociais, editados por Carlos Raimundo em Goiânia."),
+  "sobre.html": ("Sobre Carlos Raimundo · Filmmaker e Editor em Goiânia",
+                 "Carlos Raimundo, filmmaker e editor de vídeo em Goiânia. Cinema e Audiovisual na UEG, mais de 5 anos de mercado e dois prêmios em festivais."),
+  "servicos.html": ("Filmagem e Edição de Vídeo em Goiânia · Carlos Raimundo",
+                 "Filmagem e edição de casamentos e eventos, videoclipes, documentários, reels e anúncios em Goiânia. Também faço só a edição, a distância."),
+  "orcamento.html": ("Orçamento de Filmagem e Edição · Carlos Raimundo",
+                 "Peça um orçamento de filmagem ou edição de vídeo em Goiânia: casamento, 15 anos, formatura, videoclipe, documentário ou reels. Resposta em até 24 horas."),
+}
+# Código de verificação do Google Search Console (cole só o valor de content="...")
+GSC_CODE = ""
+GSC_META = f'\n<meta name="google-site-verification" content="{GSC_CODE}">' if GSC_CODE else ""
+
+def jsonld_home():
+    import json
+    data = {"@context": "https://schema.org", "@graph": [
+      {"@type": "Person", "@id": f"{SITE_URL}/#carlos", "name": "Carlos Raimundo", "alternateName": "Carlos Raimundo Macedo",
+       "jobTitle": "Filmmaker e editor de vídeo", "url": f"{SITE_URL}/", "image": f"{SITE_URL}/assets/img/carlos.jpg",
+       "email": "mailto:decupalm@gmail.com", "telephone": "+55-62-99627-1992",
+       "address": {"@type": "PostalAddress", "addressLocality": "Goiânia", "addressRegion": "GO", "addressCountry": "BR"},
+       "alumniOf": {"@type": "CollegeOrUniversity", "name": "Universidade Estadual de Goiás (UEG)"},
+       "award": ["Melhor videoclipe pelo júri popular · 6º IFIDEVIDULA (O Que Te Faz Querer)",
+                 "Menção honrosa · 12ª MAU, Mostra de Cinema e Audiovisual da UEG (Debaixo da Lona)"],
+       "knowsAbout": ["Filmagem de casamento", "Edição de vídeo", "Videoclipe", "Documentário", "Reels", "Adobe Premiere Pro"],
+       "sameAs": ["https://www.instagram.com/historiso/", "https://www.linkedin.com/in/carlos-raimundo-b557141a5/", "https://www.youtube.com/@farpanation4559"]},
+      {"@type": "ProfessionalService", "@id": f"{SITE_URL}/#servico", "name": "Carlos Raimundo · Filmmaker e editor de vídeo",
+       "url": f"{SITE_URL}/", "image": f"{SITE_URL}/assets/img/og.jpg", "telephone": "+55-62-99627-1992", "email": "decupalm@gmail.com",
+       "founder": {"@id": f"{SITE_URL}/#carlos"},
+       "address": {"@type": "PostalAddress", "addressLocality": "Goiânia", "addressRegion": "GO", "addressCountry": "BR"},
+       "areaServed": [{"@type": "City", "name": "Goiânia"}, {"@type": "City", "name": "Aparecida de Goiânia"}, {"@type": "State", "name": "Goiás"}],
+       "serviceType": ["Filmagem de casamento", "Filmagem de 15 anos", "Filmagem de formatura", "Videoclipe", "Documentário", "Edição de vídeo", "Reels e anúncios"],
+       "sameAs": ["https://www.instagram.com/historiso/", "https://www.linkedin.com/in/carlos-raimundo-b557141a5/"]},
+      {"@type": "WebSite", "@id": f"{SITE_URL}/#site", "url": f"{SITE_URL}/", "name": "Carlos Raimundo · Filmmaker e editor", "inLanguage": "pt-BR",
+       "publisher": {"@id": f"{SITE_URL}/#carlos"}}
+    ]}
+    return f'\n<script type="application/ld+json">{json.dumps(data, ensure_ascii=False)}</script>'
+
+def write_seo_files(pages):
+    import datetime
+    today = datetime.date.today().isoformat()
+    prio = {"index.html": "1.0", "trabalhos.html": "0.9", "servicos.html": "0.8", "sobre.html": "0.7", "orcamento.html": "0.8"}
+    urls = "".join(f"  <url><loc>{page_url(fn)}</loc><lastmod>{today}</lastmod><priority>{prio.get(fn, '0.7')}</priority></url>\n" for fn in pages)
+    with open(os.path.join(OUT, "sitemap.xml"), "w", encoding="utf-8") as f:
+        f.write(f'<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n{urls}</urlset>\n')
+    with open(os.path.join(OUT, "robots.txt"), "w", encoding="utf-8") as f:
+        f.write(f"User-agent: *\nAllow: /\n\nSitemap: {SITE_URL}/sitemap.xml\n")
+    print("ok sitemap.xml e robots.txt")
+
+def write_404():
+    body = """
+<section class="page-top">
+  <div class="wrap" style="position:relative">
+    <p class="crumbs">■ STOP · ERRO 404</p>
+    <h1>Fita<br><span class="acc">não encontrada.</span></h1>
+    <p class="lede">Esta página não existe ou mudou de endereço.</p>
+    <p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="/">Voltar ao início</a><a class="btn ghost" href="/trabalhos.html">Ver trabalhos</a></p>
+  </div>
+</section>
+"""
+    page = head("pt", "Página não encontrada · Carlos Raimundo", "Esta página não existe ou mudou de endereço.", "/", "404.html",
+                '\n<meta name="robots" content="noindex">').replace(f'<link rel="canonical" href="{page_url("404.html")}">', "")
+    page += nav("pt", "", "/").replace('href="index.html"', 'href="/"') + body + footer("pt", "/")
+    for a in ["trabalhos.html", "sobre.html", "servicos.html", "orcamento.html"]:
+        page = page.replace(f'href="{a}"', f'href="/{a}"')
+    with open(os.path.join(OUT, "404.html"), "w", encoding="utf-8") as f:
+        f.write(page)
+    print("ok 404.html")
+
 def build():
     langs = ["pt"] + (["en"] if BUILD_EN else [])
     for lang in langs:
@@ -378,10 +474,16 @@ def build():
             body = p["body"].get(lang)
             if body is None:
                 continue
-            page = head(lang, p["title"][lang], p["desc"][lang], prefix) + nav(lang, p["key"], prefix) + body + footer(lang, prefix)
+            title, desc = p["title"][lang], p["desc"][lang]
+            if lang == "pt" and fn in SEO:
+                title, desc = SEO[fn]
+            extra = jsonld_home() if fn == "index.html" else ""
+            page = head(lang, title, desc, prefix, fn, extra) + nav(lang, p["key"], prefix) + body + footer(lang, prefix)
             with open(os.path.join(outdir, fn), "w", encoding="utf-8") as f:
                 f.write(page)
             print("ok", lang, fn)
+    write_seo_files([fn for fn in PAGES])
+    write_404()
 
 if __name__ == "__main__":
     build()

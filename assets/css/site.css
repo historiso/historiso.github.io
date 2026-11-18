@@ -347,3 +347,6 @@ footer.site{border-top:1px solid var(--line);padding:72px 0 40px;margin-top:40px
 .award-cta{margin-top:6px;font-size:.88rem;font-weight:600;color:var(--lav);opacity:.85}
 /* orçamento: botão depois de enviar */
 .btn.is-sent{opacity:.6;cursor:default}
+
+/* texto só para leitores de tela e buscadores */
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
