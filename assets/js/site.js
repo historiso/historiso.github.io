@@ -255,11 +255,25 @@ if(window.ResizeObserver){ let t; new ResizeObserver(() => { cancelAnimationFram
 /* ---------- largura da fonte no scroll (títulos de seção) ---------- */
 const stretch = $$("h2[data-stretch]");
 if(stretch.length && !reduce){
+  // quanto cada título pode alargar sem quebrar linha (senão ele pula de 2 linhas para 1 durante a rolagem)
+  let room = new Map();
+  const measure = () => { stretch.forEach(el => {
+    const t = el.querySelector(".glitch") || el, prev = el.style.fontVariationSettings, ws = t.style.whiteSpace;
+    t.style.whiteSpace = "nowrap";
+    el.style.fontVariationSettings = '"wdth" 100'; const a = t.getBoundingClientRect().width;
+    el.style.fontVariationSettings = '"wdth" 140'; const b = t.getBoundingClientRect().width;
+    t.style.whiteSpace = ws; el.style.fontVariationSettings = prev;
+    const avail = el.clientWidth;
+    room.set(el, a > avail ? 0 : Math.min(40, 40 * (avail - a) / Math.max(1, b - a)));
+  }); };
   const upd = () => { const vh = innerHeight;
-    // no celular a largura fica fixa: alargar fazia o título quebrar em 2 linhas e voltar a 1 durante a rolagem
+    // no celular a largura fica fixa
     if(innerWidth < 768){ stretch.forEach(el => { el.style.fontVariationSettings = '"wdth" 100'; }); return; }
-    stretch.forEach(el => { const r = el.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .6))); el.style.fontVariationSettings = `"wdth" ${(140 - 40 * (1 - Math.pow(1 - p, 3))).toFixed(1)}`; }); };
-  addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
+    stretch.forEach(el => { const r = el.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .6)));
+      el.style.fontVariationSettings = `"wdth" ${(100 + (room.get(el) || 0) * Math.pow(1 - p, 3)).toFixed(1)}`; }); };
+  measure();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); upd(); });
+  addEventListener("scroll", upd, { passive: true }); addEventListener("resize", () => { measure(); upd(); }); upd();
 }
 
 /* ---------- formulário de orçamento ---------- */
