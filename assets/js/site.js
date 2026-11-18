@@ -277,19 +277,34 @@ if(form){
     btn.disabled = true; btn.classList.add("is-sent");
     st.className = "form-status ok"; st.textContent = L.sent;
     // envio "simples" (FormData, sem JSON): não precisa da consulta prévia do navegador, então chega mais rápido
-    const fd = new FormData(form);
-    fd.delete("_honey");
-    fd.append("_subject", `Orçamento pelo site · ${data.tipo || ""}`);
+    // campos com nomes legíveis: é assim que aparecem no e-mail
+    const fd = new FormData();
+    const LABELS = { nome: "Nome", email: "E-mail", whatsapp: "WhatsApp", tipo: "Tipo de trabalho", data: "Data ou prazo", cidade: "Cidade", investimento: "Investimento previsto", mensagem: "Sobre o projeto" };
+    Object.entries(LABELS).forEach(([k, label]) => fd.append(label, (saved[k] || "").trim() || "—"));
+    fd.append("_replyto", saved.email || "");
+    fd.append("_subject", "Pedido de Orçamento");
     fd.append("_template", "table");
     fd.append("_captcha", "false");
     form.reset();
     setTimeout(() => { btn.disabled = false; btn.classList.remove("is-sent"); btn.textContent = L.send; }, 3000);
     let ok = false, answered = false;
     try{
-      const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, headers: { Accept: "application/json" }, body: fd });
-      const j = await r.json().catch(() => ({}));
-      answered = true;
-      ok = r.ok && String(j.success) === "true";
+      const EJ = S.emailjs || {};
+      if(EJ.serviceId && EJ.templateId && EJ.publicKey){
+        // EmailJS: e-mail com o design próprio (modelo "pedido-de-orcamento"), entrega em ~1 s
+        const params = { ...Object.fromEntries(Object.keys(LABELS).map(k => [k, (saved[k] || "").trim() || "—"])),
+          whatsapp_link: (saved.whatsapp || "").replace(/\D/g, "").replace(/^(?!55)(\d{10,11})$/, "55$1"),
+          enviado_em: new Date().toLocaleString("pt-BR", { dateStyle: "long", timeStyle: "short" }) };
+        const r = await fetch("https://api.emailjs.com/api/v1.0/email/send", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ service_id: EJ.serviceId, template_id: EJ.templateId, user_id: EJ.publicKey, template_params: params }) });
+        answered = true; ok = r.ok;
+        if(!ok) console.warn("Envio do orçamento (EmailJS):", r.status, await r.text().catch(() => ""));
+      }else{
+        const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, headers: { Accept: "application/json" }, body: fd });
+        const j = await r.json().catch(() => ({}));
+        answered = true;
+        ok = r.ok && String(j.success) === "true";
+      }
       if(!ok) console.warn("Envio do orçamento:", r.status, j.message || "");
     }catch(err){ console.warn("Envio do orçamento:", err); }
     if(!ok && (answered || navigator.onLine === false)){
