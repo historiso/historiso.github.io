@@ -163,8 +163,9 @@ if(heroWrap && hero){
       if(reduce) return;
       const lp = Math.min(1, Math.max(0, (p - i * .06) / .5)), e = ease(lp);
       // "translate" (e não "transform"): o glitch anima o transform e não pode desfazer a subida da linha
-      l.style.translate = `0 ${(-e * (30 + i * 14)).toFixed(1)}px`;
-      l.style.fontVariationSettings = `"wdth" ${(100 + caps[i] * e).toFixed(1)}`;
+      // no celular: todas as linhas sobem juntas (espaçamento constante) e a letra não alarga
+      l.style.translate = `0 ${(-e * (portrait ? 24 : 30 + i * 14)).toFixed(1)}px`;
+      l.style.fontVariationSettings = `"wdth" ${(100 + (portrait ? 0 : caps[i]) * e).toFixed(1)}`;
       if(lp > .02 && lp < 1 && !l._g){ l._g = 1; glitch(l); } if(lp === 0) l._g = 0;
     });
     if(tc) tc.textContent = fmt(p * 24);
@@ -254,8 +255,11 @@ if(window.ResizeObserver){ let t; new ResizeObserver(() => { cancelAnimationFram
 /* ---------- largura da fonte no scroll (títulos de seção) ---------- */
 const stretch = $$("h2[data-stretch]");
 if(stretch.length && !reduce){
-  const upd = () => { const vh = innerHeight; stretch.forEach(el => { const r = el.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .6))); el.style.fontVariationSettings = `"wdth" ${(140 - 40 * (1 - Math.pow(1 - p, 3))).toFixed(1)}`; }); };
-  addEventListener("scroll", upd, { passive: true }); upd();
+  const upd = () => { const vh = innerHeight;
+    // no celular a largura fica fixa: alargar fazia o título quebrar em 2 linhas e voltar a 1 durante a rolagem
+    if(innerWidth < 768){ stretch.forEach(el => { el.style.fontVariationSettings = '"wdth" 100'; }); return; }
+    stretch.forEach(el => { const r = el.getBoundingClientRect(); const p = Math.min(1, Math.max(0, (vh - r.top) / (vh * .6))); el.style.fontVariationSettings = `"wdth" ${(140 - 40 * (1 - Math.pow(1 - p, 3))).toFixed(1)}`; }); };
+  addEventListener("scroll", upd, { passive: true }); addEventListener("resize", upd); upd();
 }
 
 /* ---------- formulário de orçamento ---------- */
