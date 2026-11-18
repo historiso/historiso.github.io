@@ -117,18 +117,12 @@ PAGES["index.html"] = {"key": "home",
     <div class="hud t"><span>▶ PLAY</span><span class="rec hide-sm">REC</span><span data-tc>SP 0:00:00</span></div>
     <div class="hero-copy">
       <h1><span class="line glitch" data-text="Histórias">Histórias</span><span class="line glitch" data-text="em emoção">em emoção</span><span class="line acc glitch" data-text="e ritmo.">e ritmo.</span></h1>
-      <p>Sou Carlos Raimundo, filmmaker e editor em Goiânia. Há mais de 5 anos filmo e edito casamentos, 15 anos, formaturas, videoclipes, documentários e vídeos para redes.</p>
+      <blockquote class="hero-quote">“Uma boa montagem faz um filme parecer bem dirigido. Uma excepcional montagem faz o filme parecer que não foi dirigido.”<footer>— WALTER MURCH</footer></blockquote>
       <div class="actions"><button class="btn" type="button" data-reel-open><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>Ver showreel</button><a class="btn ghost" href="trabalhos.html">Ver trabalhos</a></div>
     </div>
     <div class="hud b"><span class="hide-sm">SHOWREEL · 2026</span><span data-pct>CH 03 · 0%</span></div>
   </section>
 </div>
-
-<section class="quote-sec" aria-label="Citação" data-reveal>
-  <div class="wrap">
-    <blockquote class="big-quote">“Uma boa montagem faz um filme parecer bem dirigido. Uma excepcional montagem faz o filme parecer que não foi dirigido.”<footer>— WALTER MURCH</footer></blockquote>
-  </div>
-</section>
 
 <section class="sec bio-sec" aria-label="Sobre mim">
   <div class="wrap bio">
@@ -136,8 +130,7 @@ PAGES["index.html"] = {"key": "home",
     <div class="bio-text">
       <p class="eyebrow">Sobre</p>
       <h2 data-stretch>{g("Prazer, Carlos")}</h2>
-      <p class="lede">Comecei montando filmes no MovieMaker ainda criança. Estudei Cinema e Audiovisual na UEG, onde meus documentários e videoclipes ganharam prêmios, e passei quase 3 anos liderando o vídeo de uma empresa de casamentos.</p>
-      <p class="lede">Desde o fim de 2025 sigo por conta própria, da captação à montagem, em todos os nichos.</p>
+      <p class="lede">Sou Carlos Raimundo, filmmaker e editor em Goiânia. Há mais de 5 anos filmo e edito casamentos, 15 anos, formaturas, videoclipes, documentários e vídeos para redes.</p>
       <div class="stats" data-reveal>
         <div class="stat"><b>+5 anos</b><span>filmando e editando profissionalmente</span></div>
         <div class="stat"><b>2 prêmios</b><span>em festivais de cinema</span></div>
@@ -173,12 +166,12 @@ PAGES["index.html"] = {"key": "home",
   <div class="wrap" style="position:relative">
     <div class="head"><div><p class="eyebrow">Processo</p><h2 data-stretch>{g("Da câmera ao corte")}</h2></div>
       <p class="lede" style="margin:0">Casamentos, 15 anos, formaturas, videoclipes, documentários, curtas, reels e anúncios: cada formato pede um ritmo, e a edição é onde a história ganha forma.</p></div>
-    <div class="ai-grid" data-reveal>
-      <article class="ai"><span class="osd r">● CAPTAÇÃO</span><h3>Direção em cena</h3><p>Câmera principal ou secundária, dirigindo quem está na frente da lente, inclusive quem não é ator.</p></article>
+    <div class="ai-grid four" data-reveal>
+      <article class="ai"><span class="osd r">● CAPTAÇÃO</span><h3>Direção em cena</h3><p>Câmera principal ou secundária, dirigindo quem está à frente da lente de forma confortável e dinâmica, com ou sem experiência diante da câmera.</p></article>
       <article class="ai"><span class="osd g">● MONTAGEM</span><h3>Edição em todos os nichos</h3><p>Do save the date ao filme completo, do same day ao videoclipe e ao documentário: ritmo, emoção e história em cada corte.</p></article>
-      <article class="ai"><span class="osd b">● FINALIZAÇÃO</span><h3>Acabamento e versões</h3><p>Motion graphics no After Effects, acabamento e versões para cada formato e rede.</p></article>
+      <article class="ai"><span class="osd b">● FINALIZAÇÃO</span><h3>Acabamento e versões</h3><p>Motion graphics, mixagem de áudio e acabamento, com versões para cada formato e rede.</p></article>
+      <article class="ai"><span class="osd o">● IA NO FLUXO</span><h3>Fluxo mais ágil</h3><p>Ferramentas de IA, como o Adobe Firefly e o Claude, para organizar o material, agilizar etapas repetitivas e ampliar o tipo de trabalho que consigo entregar.</p></article>
     </div>
-    <p class="note-box">IA no fluxo: uso ferramentas de IA, como o Adobe Firefly e o Claude, para organizar o material, agilizar etapas repetitivas e ampliar o tipo de trabalho que consigo entregar.</p>
   </div>
 </section>
 
@@ -280,7 +273,7 @@ PAGES["sobre.html"] = {"key": "about",
     <div class="head"><div><p class="eyebrow">Habilidades</p><h2 data-stretch>{g("O que eu faço")}</h2></div></div>
     <div class="skills" data-reveal>
       <div class="skill"><b>Adobe Premiere Pro</b><span>Edição em domínio pleno, desde o início da carreira</span></div>
-      <div class="skill"><b>After Effects</b><span>Motion graphics para acabamento</span></div>
+      <div class="skill"><b>Finalização</b><span>Motion graphics e mixagem de áudio no acabamento</span></div>
       <div class="skill"><b>Captação</b><span>Câmera profissional e mobile, como câmera principal ou secundária</span></div>
       <div class="skill"><b>Direção de set</b><span>Posição, expressão e cena, inclusive com quem não é ator</span></div>
       <div class="skill"><b>IA no fluxo</b><span>Ferramentas como o Adobe Firefly e o Claude para organizar, agilizar e ampliar as entregas</span></div>
