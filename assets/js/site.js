@@ -161,7 +161,7 @@ if(heroWrap && hero){
     bg.style.transform = portrait ? "none" : `scale(${1.15 - .15 * ease(p)})`;
     lines.forEach((l, i) => {
       if(reduce) return;
-      const lp = Math.min(1, Math.max(0, (p - i * .06) / .5)), e = ease(lp);
+      const lp = Math.min(1, Math.max(0, (p - (portrait ? 0 : i * .06)) / .5)), e = ease(lp);
       // "translate" (e não "transform"): o glitch anima o transform e não pode desfazer a subida da linha
       // no celular: todas as linhas sobem juntas (espaçamento constante) e a letra não alarga
       l.style.translate = `0 ${(-e * (portrait ? 24 : 30 + i * 14)).toFixed(1)}px`;
