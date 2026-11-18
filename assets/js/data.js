@@ -13,7 +13,7 @@ window.SITE = {
   instagramAutoral: { handle: "@decupalm", url: "https://www.instagram.com/decupalm/" },
   linkedin: "https://www.linkedin.com/in/carlos-raimundo-b557141a5/",
   /* E-mail com design próprio (EmailJS). Enquanto vazio, o site envia pelo FormSubmit. */
-  emailjs: { serviceId: "", templateId: "", publicKey: "" },
+  emailjs: { serviceId: "service_lrm7ox4", templateId: "template_5argmsr", publicKey: "w5-M0-FVEo0iRWuKI" },
   /* Showreel no topo da Home: arquivos em assets/video (mudo, em loop).
      Para trocar, substitua os arquivos mantendo os nomes. */
   showreel: { hd: "assets/video/showreel-1080.mp4", sd: "assets/video/showreel-720.mp4", poster: "assets/video/showreel-poster.jpg" }

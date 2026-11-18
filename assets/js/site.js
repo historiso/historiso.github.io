@@ -295,17 +295,21 @@ if(form){
         const params = { ...Object.fromEntries(Object.keys(LABELS).map(k => [k, (saved[k] || "").trim() || "—"])),
           whatsapp_link: (saved.whatsapp || "").replace(/\D/g, "").replace(/^(?!55)(\d{10,11})$/, "55$1"),
           enviado_em: new Date().toLocaleString("pt-BR", { dateStyle: "long", timeStyle: "short" }) };
-        const r = await fetch("https://api.emailjs.com/api/v1.0/email/send", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ service_id: EJ.serviceId, template_id: EJ.templateId, user_id: EJ.publicKey, template_params: params }) });
-        answered = true; ok = r.ok;
-        if(!ok) console.warn("Envio do orçamento (EmailJS):", r.status, await r.text().catch(() => ""));
-      }else{
+        try{
+          const r = await fetch("https://api.emailjs.com/api/v1.0/email/send", { method: "POST", keepalive: true, headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ service_id: EJ.serviceId, template_id: EJ.templateId, user_id: EJ.publicKey, template_params: params }) });
+          ok = r.ok;
+          if(!ok) console.warn("Envio do orçamento (EmailJS):", r.status, await r.text().catch(() => ""));
+        }catch(err){ console.warn("Envio do orçamento (EmailJS):", err); }
+      }
+      if(!ok){
+        // reserva: se o EmailJS não estiver configurado ou falhar (ex.: limite do mês), envia pelo FormSubmit
         const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, headers: { Accept: "application/json" }, body: fd });
         const j = await r.json().catch(() => ({}));
         answered = true;
         ok = r.ok && String(j.success) === "true";
+        if(!ok) console.warn("Envio do orçamento (FormSubmit):", r.status, j.message || "");
       }
-      if(!ok) console.warn("Envio do orçamento:", r.status, j.message || "");
     }catch(err){ console.warn("Envio do orçamento:", err); }
     if(!ok && (answered || navigator.onLine === false)){
       // recusado ou sem internet: devolve o que a pessoa escreveu e oferece tentar de novo
