@@ -132,6 +132,19 @@ if(heroWrap && hero){
   const bg = $(".bg", hero), barT = $(".bar.t", hero), barB = $(".bar.b", hero), tc = $("[data-tc]", hero), pct = $("[data-pct]", hero);
   const lines = $$(".line", hero);
   const ease = t => 1 - Math.pow(1 - t, 3);
+  // quanto cada linha pode alargar sem passar da largura da tela (evita quebrar linha e o texto pular)
+  let caps = lines.map(() => 35);
+  function measureCaps(){
+    const avail = hero.clientWidth - 40;
+    caps = lines.map(l => {
+      const prev = l.style.fontVariationSettings;
+      l.style.fontVariationSettings = '"wdth" 100'; const a = l.getBoundingClientRect().width;
+      l.style.fontVariationSettings = '"wdth" 135'; const b = l.getBoundingClientRect().width;
+      l.style.fontVariationSettings = prev;
+      return b <= avail ? 35 : Math.max(0, 35 * (avail - a) / Math.max(1, b - a));
+    });
+    last = -1;
+  }
   let last = -1;
   const fmt = s => { const S2 = Math.floor(s) % 60, M = Math.floor(s / 60) % 60; return `SP 0:${String(M).padStart(2,"0")}:${String(S2).padStart(2,"0")}`; };
   function render(){
@@ -146,14 +159,16 @@ if(heroWrap && hero){
       if(reduce) return;
       const lp = Math.min(1, Math.max(0, (p - i * .06) / .5)), e = ease(lp);
       l.style.transform = `translateY(${(-e * (30 + i * 14)).toFixed(1)}px)`;
-      l.style.fontVariationSettings = `"wdth" ${(100 + 35 * e).toFixed(1)}`;
+      l.style.fontVariationSettings = `"wdth" ${(100 + caps[i] * e).toFixed(1)}`;
       if(lp > .02 && lp < 1 && !l._g){ l._g = 1; glitch(l); } if(lp === 0) l._g = 0;
     });
     if(tc) tc.textContent = fmt(p * 24);
     if(pct) pct.textContent = `CH 03 · ${Math.round(p * 100)}%`;
   }
   const loop = () => { render(); requestAnimationFrame(loop); }; loop();
-  addEventListener("resize", () => { last = -1; });
+  measureCaps();
+  if(document.fonts && document.fonts.ready) document.fonts.ready.then(measureCaps);
+  addEventListener("resize", measureCaps);
   setTimeout(() => lines.forEach((l, i) => setTimeout(() => glitch(l), i * 140)), 350);
   // showreel no fundo (mudo, em loop); só o pôster se "reduzir movimento" ou economia de dados
   const saveData = navigator.connection && navigator.connection.saveData;

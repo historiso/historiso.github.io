@@ -328,3 +328,6 @@ footer.site{border-top:1px solid var(--line);padding:72px 0 40px;margin-top:40px
 /* nome no menu: centraliza as maiúsculas na altura da barra */
 .brand{line-height:1;padding-top:.14em}
 .brand i{margin-top:-.14em}
+
+/* título do topo: linhas nunca quebram; o alargamento cabe na tela (measureCaps no site.js) */
+.hero-copy .line{white-space:nowrap;width:max-content;margin-inline:auto}
