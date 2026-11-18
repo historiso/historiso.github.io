@@ -121,6 +121,8 @@ if(modal){
   $(".close", modal).addEventListener("click", closePlayer);
   modal.addEventListener("click", e => { if(e.target === modal) closePlayer(); });
   addEventListener("keydown", e => { if(e.key === "Escape") closePlayer(); });
+  // botões que abrem um vídeo pelo id (ex.: quadros de prêmios)
+  $$("[data-play]").forEach(b => b.addEventListener("click", () => { const w = WORKS.find(x => x.id === b.dataset.play); if(w) openPlayer(w); }));
   const h = decodeURIComponent(location.hash.slice(1));
   const w = h && WORKS.find(x => x.id === h);
   if(w) setTimeout(() => openPlayer(w), 300);
@@ -229,7 +231,18 @@ function balance(box, minW, ratio, maxH){
   box.classList.add("balanced");
   items.forEach((el, i) => { el.style.gridColumn = `span ${i >= (rows - 1) * cols ? tracks / last : tracks / cols}`; });
 }
+/* quadros de texto (ex.: habilidades): mesmo equilíbrio, sem altura fixa */
+function balanceText(box){
+  const items = [...box.children], n = items.length; if(!n) return;
+  const minW = +box.dataset.balance || 220, gap = parseFloat(getComputedStyle(box).columnGap) || 12, W = box.clientWidth;
+  const maxCols = Math.max(1, Math.min(n, Math.floor((W + gap) / (minW + gap))));
+  const rows = Math.ceil(n / maxCols), cols = Math.ceil(n / rows), last = n - (rows - 1) * cols;
+  const tracks = last === cols ? cols : cols * last;
+  box.style.gridTemplateColumns = `repeat(${tracks}, minmax(0,1fr))`;
+  items.forEach((el, i) => { el.style.gridColumn = `span ${i >= (rows - 1) * cols ? tracks / last : tracks / cols}`; });
+}
 const balanced = [];
+$$("[data-balance]").forEach(box => balanced.push(() => balanceText(box)));
 $$("[data-cats]").forEach(box => { const wide = box.hasAttribute("data-wide"); balanced.push(() => balance(box, 270, wide ? 10/16 : 5/4, wide ? 380 : 520)); });
 $$("[data-grid]").forEach(box => { const v = box.classList.contains("vertical"); balanced.push(() => balance(box, v ? 220 : 320, v ? 16/9 : 9/16, v ? 640 : 420)); });
 const runBalance = () => balanced.forEach(f => f());
@@ -246,21 +259,33 @@ if(stretch.length && !reduce){
 /* ---------- formulário de orçamento ---------- */
 const form = $("#quote-form");
 if(form){
+  const ENDPOINT = `https://formsubmit.co/ajax/${S.email}`;
+  // abre a conexão com o serviço de envio antes do clique (tira ~0,5 s do envio)
+  const pre = document.createElement("link"); pre.rel = "preconnect"; pre.href = "https://formsubmit.co"; pre.crossOrigin = ""; document.head.appendChild(pre);
+  let warmed = false;
+  form.addEventListener("focusin", () => { if(warmed) return; warmed = true; fetch("https://formsubmit.co/", { mode: "no-cors", cache: "no-store" }).catch(() => {}); });
+  const btn = $('button[type="submit"]', form), st = $(".form-status", form);
   form.addEventListener("submit", async e => {
     e.preventDefault();
-    const st = $(".form-status", form), data = Object.fromEntries(new FormData(form));
+    if(!form.reportValidity()) return;
+    const data = Object.fromEntries(new FormData(form));
     if(data._honey) return;
-    st.className = "form-status"; st.textContent = L.sending;
     const body = Object.entries(data).filter(([k]) => !k.startsWith("_")).map(([k, v]) => `${k}: ${v}`).join("\n");
+    const fallback = () => { st.className = "form-status err"; st.textContent = L.fail;
+      location.href = `mailto:${S.email}?subject=${encodeURIComponent("Orçamento pelo site")}&body=${encodeURIComponent(body)}`; };
+    // resposta na hora: o pedido segue em segundo plano (keepalive) e só volta atrás se o envio falhar
+    btn.disabled = true; btn.classList.add("is-sent");
+    st.className = "form-status ok"; st.textContent = L.sent;
+    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 15000);
     try{
-      const r = await fetch(`https://formsubmit.co/ajax/${S.email}`, { method:"POST", headers:{ "Content-Type":"application/json", Accept:"application/json" },
-        body: JSON.stringify({ ...data, _subject: `Orçamento pelo site · ${data.tipo || ""}`, _template: "table" }) });
-      if(!r.ok) throw new Error(r.status);
-      st.className = "form-status ok"; st.textContent = L.sent; form.reset();
-    }catch(err){
-      st.className = "form-status err"; st.textContent = L.fail;
-      location.href = `mailto:${S.email}?subject=${encodeURIComponent("Orçamento pelo site")}&body=${encodeURIComponent(body)}`;
-    }
+      const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, signal: ctrl.signal,
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        body: JSON.stringify({ ...data, _subject: `Orçamento pelo site · ${data.tipo || ""}`, _template: "table", _captcha: "false" }) });
+      const j = await r.json().catch(() => ({}));
+      if(!r.ok || String(j.success) !== "true") throw new Error(j.message || r.status);
+      form.reset();
+    }catch(err){ fallback(); }
+    finally{ clearTimeout(timer); setTimeout(() => { btn.disabled = false; btn.classList.remove("is-sent"); }, 4000); }
   });
 }
 

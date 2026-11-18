@@ -331,3 +331,19 @@ footer.site{border-top:1px solid var(--line);padding:72px 0 40px;margin-top:40px
 
 /* título do topo: linhas nunca quebram; o alargamento cabe na tela (measureCaps no site.js) */
 .hero-copy .line{white-space:nowrap;width:max-content;margin-inline:auto}
+
+/* Reconhecimento: 2 quadros com a cena do meio do filme em baixa opacidade */
+.award-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:8px}
+@media(max-width:760px){.award-cards{grid-template-columns:minmax(0,1fr)}}
+.award-card{all:unset;box-sizing:border-box;cursor:pointer;position:relative;isolation:isolate;overflow:hidden;border-radius:18px;border:1px solid var(--line);background:var(--night);min-height:300px;display:flex;align-items:flex-end;transition:border-color .4s,box-shadow .4s}
+.award-card img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;opacity:.34;filter:saturate(.85);transform:scale(1.04);transition:opacity .6s var(--ease),transform .9s var(--ease);z-index:-2}
+.award-card::after{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(to top,rgba(11,6,18,.92),rgba(11,6,18,.2) 75%),rgba(107,47,153,.15)}
+.award-card:hover,.award-card:focus-visible{border-color:var(--orchid);box-shadow:0 22px 60px -22px rgba(196,139,224,.6)}
+.award-card:hover img,.award-card:focus-visible img{opacity:.5;transform:scale(1)}
+.award-body{display:flex;flex-direction:column;gap:8px;padding:28px}
+.award-body .osd{color:var(--orchid);font-size:1.25rem}
+.award-body b{font-family:var(--f-display);font-weight:800;font-size:clamp(1.6rem,2.6vw,2.2rem);line-height:.95;text-transform:uppercase;font-variation-settings:"wdth" 90}
+.award-film{color:rgba(238,227,247,.8)}
+.award-cta{margin-top:6px;font-size:.88rem;font-weight:600;color:var(--lav);opacity:.85}
+/* orçamento: botão depois de enviar */
+.btn.is-sent{opacity:.6;cursor:default}

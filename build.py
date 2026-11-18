@@ -263,7 +263,7 @@ PAGES["sobre.html"] = {"key": "about",
         <li><span class="osd">UEG</span>Cinema e Audiovisual: documentários e videoclipes</li>
         <li><span class="osd">2022</span>Menção honrosa na 12ª MAU com Debaixo da Lona</li>
         <li><span class="osd">2022–2025</span>Empresa de casamentos: de editor júnior a líder do departamento de vídeo</li>
-        <li><span class="osd">FIM DE 2025</span>Freelancer, captação e edição em todos os nichos</li>
+        <li><span class="osd">2025 – ATUALMENTE</span>Freelancer, captação e edição em todos os nichos</li>
       </ol>
     </div>
   </div>
@@ -271,7 +271,7 @@ PAGES["sobre.html"] = {"key": "about",
 <section class="sec line">
   <div class="wrap">
     <div class="head"><div><p class="eyebrow">Habilidades</p><h2 data-stretch>{g("O que eu faço")}</h2></div></div>
-    <div class="skills" data-reveal>
+    <div class="skills" data-balance="230" data-reveal>
       <div class="skill"><b>Adobe Premiere Pro</b><span>Edição em domínio pleno, desde o início da carreira</span></div>
       <div class="skill"><b>Finalização</b><span>Motion graphics e mixagem de áudio no acabamento</span></div>
       <div class="skill"><b>Captação</b><span>Câmera profissional e mobile, como câmera principal ou secundária</span></div>
@@ -285,10 +285,16 @@ PAGES["sobre.html"] = {"key": "about",
 <section class="sec line">
   <div class="wrap">
     <div class="head"><div><p class="eyebrow">Prêmios</p><h2 data-stretch>{g("Reconhecimento")}</h2></div></div>
-  </div>
-  <div class="awards" data-reveal>
-    <div class="award"><span class="osd">★</span><div><b>Melhor videoclipe pelo júri popular</b><span>O Que Te Faz Querer, Actemia · 6º IFIDEVIDULA</span></div></div>
-    <div class="award"><span class="osd">★</span><div><b>Menção honrosa</b><span>Debaixo da Lona · 12ª MAU, Mostra de Cinema e Audiovisual da UEG, 2022</span></div></div>
+    <div class="award-cards" data-reveal>
+      <button class="award-card" type="button" data-play="tiFgOgUHBwo" aria-label="Assistir O Que Te Faz Querer, melhor videoclipe pelo júri popular">
+        <img src="assets/img/premio-o-que-te-faz-querer.jpg" alt="" loading="lazy" decoding="async">
+        <span class="award-body"><span class="osd">★ 6º IFIDEVIDULA</span><b>Melhor videoclipe pelo júri popular</b><span class="award-film">O Que Te Faz Querer · Actemia</span><span class="award-cta">▶ Assistir ao filme</span></span>
+      </button>
+      <button class="award-card" type="button" data-play="65ni2V6kw5w" aria-label="Assistir Debaixo da Lona, menção honrosa na 12ª MAU">
+        <img src="assets/img/premio-debaixo-da-lona.jpg" alt="" loading="lazy" decoding="async">
+        <span class="award-body"><span class="osd">★ 12ª MAU · UEG, 2022</span><b>Menção honrosa</b><span class="award-film">Debaixo da Lona · documentário</span><span class="award-cta">▶ Assistir ao filme</span></span>
+      </button>
+    </div>
   </div>
   <div class="wrap"><p class="note-box">Meus filmes autorais estão em <a href="trabalhos-filmes.html">Filmes</a>, e o restante em <a href="trabalhos.html">Trabalhos</a>.</p></div>
 </section>
@@ -356,6 +362,7 @@ PAGES["orcamento.html"] = {"key": "quote",
       <a class="contact" href="https://wa.me/5562996271992" target="_blank" rel="noopener"><span class="osd">WHATSAPP</span><div><b>(62) 99627-1992</b><small>O jeito mais rápido</small></div></a>
       <a class="contact" href="mailto:decupalm@gmail.com"><span class="osd">E-MAIL</span><div><b>decupalm@gmail.com</b><small>Para briefings e arquivos</small></div></a>
       <a class="contact" href="https://www.instagram.com/historiso/" target="_blank" rel="noopener"><span class="osd">INSTAGRAM</span><div><b>@historiso</b><small>Bastidores e trabalhos</small></div></a>
+      <a class="contact" href="https://www.instagram.com/decupalm/" target="_blank" rel="noopener"><span class="osd">DECUPALM</span><div><b>@decupalm</b><small>Minha produtora de casamentos</small></div></a>
     </div>
   </div>
 </section>
