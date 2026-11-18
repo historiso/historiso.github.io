@@ -271,26 +271,32 @@ if(form){
     const data = Object.fromEntries(new FormData(form));
     if(data._honey) return;
     // tudo acontece aqui no site: resposta na hora e, se o envio falhar, os dados ficam no formulário para tentar de novo
-    btn.disabled = true; btn.classList.add("is-sent"); btn.textContent = L.sending;
-    st.className = "form-status"; st.textContent = "";
+    // o FormSubmit pode levar mais de 1 minuto para responder: confirmamos na hora e o envio termina em segundo plano
+    // (keepalive mantém o envio mesmo se a pessoa fechar a página). Se o serviço recusar, avisamos e os dados voltam.
+    const saved = Object.fromEntries(new FormData(form));
+    btn.disabled = true; btn.classList.add("is-sent");
+    st.className = "form-status ok"; st.textContent = L.sent;
     // envio "simples" (FormData, sem JSON): não precisa da consulta prévia do navegador, então chega mais rápido
     const fd = new FormData(form);
     fd.delete("_honey");
     fd.append("_subject", `Orçamento pelo site · ${data.tipo || ""}`);
     fd.append("_template", "table");
     fd.append("_captcha", "false");
-    const ctrl = new AbortController(), timer = setTimeout(() => ctrl.abort(), 15000);
-    let ok = false;
+    form.reset();
+    setTimeout(() => { btn.disabled = false; btn.classList.remove("is-sent"); btn.textContent = L.send; }, 3000);
+    let ok = false, answered = false;
     try{
-      const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, signal: ctrl.signal, headers: { Accept: "application/json" }, body: fd });
+      const r = await fetch(ENDPOINT, { method: "POST", keepalive: true, headers: { Accept: "application/json" }, body: fd });
       const j = await r.json().catch(() => ({}));
+      answered = true;
       ok = r.ok && String(j.success) === "true";
       if(!ok) console.warn("Envio do orçamento:", r.status, j.message || "");
     }catch(err){ console.warn("Envio do orçamento:", err); }
-    clearTimeout(timer);
-    btn.disabled = false; btn.classList.remove("is-sent");
-    if(ok){ form.reset(); btn.textContent = L.send; st.className = "form-status ok"; st.textContent = L.sent; }
-    else{ st.className = "form-status err"; st.textContent = L.fail; btn.textContent = L.retry; }
+    if(!ok && (answered || navigator.onLine === false)){
+      // recusado ou sem internet: devolve o que a pessoa escreveu e oferece tentar de novo
+      Object.entries(saved).forEach(([k, v]) => { if(form.elements[k] && k !== "_honey") form.elements[k].value = v; });
+      st.className = "form-status err"; st.textContent = L.fail; btn.textContent = L.retry; btn.disabled = false; btn.classList.remove("is-sent");
+    }
   });
 }
 
