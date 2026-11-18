@@ -263,7 +263,10 @@ if(stretch.length && !reduce){
     el.style.fontVariationSettings = '"wdth" 100'; const a = t.getBoundingClientRect().width;
     el.style.fontVariationSettings = '"wdth" 140'; const b = t.getBoundingClientRect().width;
     t.style.whiteSpace = ws; el.style.fontVariationSettings = prev;
-    const avail = el.clientWidth;
+    // espaço real: a largura do bloco do título, menos o texto ao lado quando estiver na mesma linha
+    const head = el.closest(".head"), lede = head && head.querySelector(":scope > .lede");
+    let avail = head ? head.clientWidth : el.parentElement.clientWidth;
+    if(lede){ const lr = lede.getBoundingClientRect(), er = el.getBoundingClientRect(); if(lr.top < er.bottom && lr.left > er.left) avail -= lede.offsetWidth + 24; }
     room.set(el, a > avail ? 0 : Math.min(40, 40 * (avail - a) / Math.max(1, b - a)));
   }); };
   const upd = () => { const vh = innerHeight;
