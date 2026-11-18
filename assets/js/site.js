@@ -153,10 +153,12 @@ if(heroWrap && hero){
     const r = heroWrap.getBoundingClientRect(), total = r.height - hero.offsetHeight;
     const p = Math.min(1, Math.max(0, -r.top / Math.max(1, total)));
     if(Math.abs(p - last) < .0005) return; last = p;
-    const w = hero.offsetWidth, h = hero.offsetHeight, bar = Math.max(0, (h - w / 2.39) / 2);
+    // celular / tela em pé: sem faixas de cinema nem zoom (o vídeo viraria uma tira fina que "cresce" ao rolar)
+    const w = hero.offsetWidth, h = hero.offsetHeight, portrait = w < 768 || h > w;
+    const bar = portrait ? 0 : Math.max(0, (h - w / 2.39) / 2);
     const b = bar * (1 - ease(Math.min(1, p * 1.6)));
     barT.style.height = b + "px"; barB.style.height = b + "px";
-    bg.style.transform = `scale(${1.15 - .15 * ease(p)})`;
+    bg.style.transform = portrait ? "none" : `scale(${1.15 - .15 * ease(p)})`;
     lines.forEach((l, i) => {
       if(reduce) return;
       const lp = Math.min(1, Math.max(0, (p - i * .06) / .5)), e = ease(lp);
