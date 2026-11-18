@@ -301,3 +301,17 @@ footer.site{border-top:1px solid var(--line);padding:72px 0 40px;margin-top:40px
 .reel-close{position:absolute;top:16px;right:16px;width:46px;height:46px;border-radius:50%;border:0;background:rgba(0,0,0,.55);color:#fff;font-size:1.8rem;line-height:1;cursor:pointer;transition:opacity .4s}
 .reel.idle .reel-close{opacity:0}
 .reel.idle{cursor:none}
+
+/* Home: citação e mini bio */
+.quote-sec{padding:96px 0 40px;text-align:center}
+.big-quote{margin:0 auto;max-width:30ch;font-family:var(--f-display);font-weight:700;font-size:clamp(1.6rem,3.6vw,2.8rem);line-height:1.12;font-variation-settings:"wdth" 92;color:var(--lav);text-wrap:balance}
+.big-quote footer{margin-top:22px;font-family:var(--f-osd);font-size:1.3rem;font-weight:400;letter-spacing:.1em;color:var(--orchid)}
+.bio{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:56px;align-items:center}
+.bio-photo{position:relative;margin:0;border-radius:18px;overflow:hidden;background:var(--night);aspect-ratio:4/5;box-shadow:0 30px 80px -30px rgba(107,47,153,.9)}
+.bio-photo img{width:100%;height:100%;object-fit:cover;filter:grayscale(1) contrast(1.05)}
+.bio-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(to top,rgba(11,6,18,.75),transparent 45%),rgba(107,47,153,.12);pointer-events:none}
+.bio-photo figcaption{position:absolute;left:16px;bottom:14px;z-index:1;font-size:1.1rem;color:var(--lav)}
+.bio-text .lede{margin-top:18px}
+.bio-text h2{margin-top:6px}
+.bio-text .stats{margin-top:28px;grid-template-columns:repeat(2,1fr)}
+@media(max-width:820px){.bio{grid-template-columns:minmax(0,1fr);gap:32px}.bio-text h2{font-size:clamp(1.9rem,9vw,3rem)}.bio-photo{max-width:420px;margin-inline:auto;width:100%}.quote-sec{padding:72px 0 24px}}

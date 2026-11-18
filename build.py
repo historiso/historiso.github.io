@@ -7,11 +7,14 @@ Uso:  python3 build.py
   mude BUILD_EN para True e rode de novo. Ela sai na pasta /en.
 - Os vídeos ficam em assets/js/data.js e não exigem rodar este script.
 """
-import os, html
+import os, html, hashlib
 
 BUILD_EN = False
 SITE_URL = "https://historiso.github.io"
 OUT = os.path.dirname(os.path.abspath(__file__))
+def ver(rel):  # muda quando o arquivo muda: evita que o navegador use versão antiga
+    with open(os.path.join(OUT, rel), "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()[:8]
 FONTS = "https://fonts.googleapis.com/css2?family=Anybody:wdth,wght@50..150,300..900&family=Hanken+Grotesk:wght@400;500;600;700&family=VT323&display=swap"
 
 T = {
@@ -49,7 +52,7 @@ def head(lang, title, desc, prefix):
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="{FONTS}" rel="stylesheet">
-<link rel="stylesheet" href="{prefix}assets/css/site.css">
+<link rel="stylesheet" href="{prefix}assets/css/site.css?v={ver("assets/css/site.css")}">
 </head>
 <body>
 <a class="skip" href="#conteudo">{T[lang]['skip']}</a>
@@ -91,8 +94,8 @@ def footer(lang, prefix):
   <button class="close" aria-label="{t['close']}">×</button>
   <div class="modal-box"><div class="player"></div><div class="modal-body"></div></div>
 </div>
-<script src="{prefix}assets/js/data.js"></script>
-<script src="{prefix}assets/js/site.js"></script>
+<script src="{prefix}assets/js/data.js?v={ver("assets/js/data.js")}"></script>
+<script src="{prefix}assets/js/site.js?v={ver("assets/js/site.js")}"></script>
 </body>
 </html>
 """
@@ -105,7 +108,7 @@ PAGES = {}
 
 PAGES["index.html"] = {"key": "home",
  "title": {"pt": "Carlos Raimundo · Filmmaker e editor em Goiânia", "en": None},
- "desc": {"pt": "Filmmaker e editor em Goiânia. Mais de 5 anos filmando e editando casamentos, 15 anos, formaturas, videoclipes e documentários, com IA no fluxo de edição.", "en": None},
+ "desc": {"pt": "Filmmaker e editor em Goiânia. Mais de 5 anos filmando e editando casamentos, 15 anos, formaturas, videoclipes, documentários, reels e anúncios.", "en": None},
  "body": {"pt": f"""
 <div class="hero-wrap">
   <section class="hero" aria-label="Apresentação">
@@ -114,16 +117,34 @@ PAGES["index.html"] = {"key": "home",
     <div class="hud t"><span>▶ PLAY</span><span class="rec hide-sm">REC</span><span data-tc>SP 0:00:00</span></div>
     <div class="hero-copy">
       <h1><span class="line glitch" data-text="Histórias">Histórias</span><span class="line glitch" data-text="em emoção">em emoção</span><span class="line acc glitch" data-text="e ritmo.">e ritmo.</span></h1>
-      <p>Sou Carlos Raimundo, filmmaker e editor em Goiânia. Há mais de 5 anos filmo e edito casamentos, eventos, música e filmes autorais, hoje com IA no fluxo de edição.</p>
+      <p>Sou Carlos Raimundo, filmmaker e editor em Goiânia. Há mais de 5 anos filmo e edito casamentos, 15 anos, formaturas, videoclipes, documentários e vídeos para redes.</p>
       <div class="actions"><button class="btn" type="button" data-reel-open><svg viewBox="0 0 14 14" width="14" height="14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>Ver showreel</button><a class="btn ghost" href="trabalhos.html">Ver trabalhos</a></div>
     </div>
     <div class="hud b"><span class="hide-sm">SHOWREEL · 2026</span><span data-pct>CH 03 · 0%</span></div>
   </section>
 </div>
 
-<section class="awards" aria-label="Prêmios" data-reveal>
-  <div class="award"><span class="osd">★</span><div><b>Melhor videoclipe pelo júri popular</b><span>O Que Te Faz Querer, Actemia · 6º IFIDEVIDULA</span></div></div>
-  <div class="award"><span class="osd">★</span><div><b>Menção honrosa</b><span>Debaixo da Lona · 12ª MAU, Mostra de Cinema e Audiovisual da UEG, 2022</span></div></div>
+<section class="quote-sec" aria-label="Citação" data-reveal>
+  <div class="wrap">
+    <blockquote class="big-quote">“Uma boa montagem faz um filme parecer bem dirigido. Uma excepcional montagem faz o filme parecer que não foi dirigido.”<footer>— WALTER MURCH</footer></blockquote>
+  </div>
+</section>
+
+<section class="sec bio-sec" aria-label="Sobre mim">
+  <div class="wrap bio">
+    <figure class="bio-photo" data-reveal><img src="assets/img/carlos.jpg" alt="Carlos Raimundo, sentado num sofá de couro durante uma festa à noite, em preto e branco" loading="lazy" decoding="async" width="1000" height="1268"><figcaption class="osd">● REC · CARLOS RAIMUNDO</figcaption></figure>
+    <div class="bio-text">
+      <p class="eyebrow">Sobre</p>
+      <h2 data-stretch>{g("Prazer, Carlos")}</h2>
+      <p class="lede">Comecei montando filmes no MovieMaker ainda criança. Estudei Cinema e Audiovisual na UEG, onde meus documentários e videoclipes ganharam prêmios, e passei quase 3 anos liderando o vídeo de uma empresa de casamentos.</p>
+      <p class="lede">Desde o fim de 2025 sigo por conta própria, da captação à montagem, em todos os nichos.</p>
+      <div class="stats" data-reveal>
+        <div class="stat"><b>+5 anos</b><span>filmando e editando profissionalmente</span></div>
+        <div class="stat"><b>2 prêmios</b><span>em festivais de cinema</span></div>
+      </div>
+      <p style="margin-top:24px"><a class="btn ghost" href="sobre.html">Conhecer minha história</a></p>
+    </div>
+  </div>
 </section>
 
 <section class="sec">
@@ -142,40 +163,30 @@ PAGES["index.html"] = {"key": "home",
   </div>
 </section>
 
-<section class="sec line" id="ia">
+<section class="awards" aria-label="Prêmios" data-reveal>
+  <div class="award"><span class="osd">★</span><div><b>Melhor videoclipe pelo júri popular</b><span>O Que Te Faz Querer, Actemia · 6º IFIDEVIDULA</span></div></div>
+  <div class="award"><span class="osd">★</span><div><b>Menção honrosa</b><span>Debaixo da Lona · 12ª MAU, Mostra de Cinema e Audiovisual da UEG, 2022</span></div></div>
+</section>
+
+<section class="sec line" id="processo">
   <div class="glow" style="width:560px;height:560px;left:-240px;top:40px"></div>
   <div class="wrap" style="position:relative">
-    <div class="head"><div><p class="eyebrow">IA no fluxo</p><h2 data-stretch>{g("Edição com IA")}</h2></div>
-      <p class="lede" style="margin:0">Uso inteligência artificial nas etapas repetitivas da edição para sobrar tempo para o que importa: ritmo, emoção e história.</p></div>
+    <div class="head"><div><p class="eyebrow">Processo</p><h2 data-stretch>{g("Da câmera ao corte")}</h2></div>
+      <p class="lede" style="margin:0">Casamentos, 15 anos, formaturas, videoclipes, documentários, curtas, reels e anúncios: cada formato pede um ritmo, e a edição é onde a história ganha forma.</p></div>
     <div class="ai-grid" data-reveal>
-      <article class="ai"><span class="osd r">● IA GENERATIVA</span><h3>Imagem e vídeo gerados</h3><p>Ferramentas de IA generativa, como o Adobe Firefly, para criar e estender imagens, elementos de cena e referências visuais.</p></article>
-      <article class="ai"><span class="osd g">● EDIÇÃO</span><h3>Edição com IA</h3><p>IA no processo de edição para organizar o material, acelerar a montagem e preparar versões para cada formato e rede.</p></article>
-      <article class="ai"><span class="osd b">● PRÉ-PRODUÇÃO</span><h3>Roteiro e decupagem</h3><p>Assistentes de IA, como o Claude, para roteiro, decupagem, referências e organização de cada projeto.</p></article>
+      <article class="ai"><span class="osd r">● CAPTAÇÃO</span><h3>Direção em cena</h3><p>Câmera principal ou secundária, dirigindo quem está na frente da lente, inclusive quem não é ator.</p></article>
+      <article class="ai"><span class="osd g">● MONTAGEM</span><h3>Edição em todos os nichos</h3><p>Do save the date ao filme completo, do same day ao videoclipe e ao documentário: ritmo, emoção e história em cada corte.</p></article>
+      <article class="ai"><span class="osd b">● FINALIZAÇÃO</span><h3>Acabamento e versões</h3><p>Motion graphics no After Effects, acabamento e versões para cada formato e rede.</p></article>
     </div>
+    <p class="note-box">IA no fluxo: uso ferramentas de IA, como o Adobe Firefly e o Claude, para organizar o material, agilizar etapas repetitivas e ampliar o tipo de trabalho que consigo entregar.</p>
   </div>
 </section>
 
-<section class="sec line">
-  <div class="wrap about">
-    <div>
-      <p class="eyebrow">Sobre</p>
-      <blockquote>“Uma boa montagem faz um filme parecer bem dirigido. Uma excepcional montagem faz o filme parecer que não foi dirigido.”<footer>— WALTER MURCH</footer></blockquote>
-      <p class="lede">Da captação à montagem, meu trabalho é dar forma a histórias que não passam despercebidas.</p>
-      <p style="margin-top:24px"><a class="btn ghost" href="sobre.html">Conhecer minha história</a></p>
-    </div>
-    <div class="stats" data-reveal>
-      <div class="stat"><b>+5 anos</b><span>filmando e editando profissionalmente</span></div>
-      <div class="stat"><b>2 prêmios</b><span>em festivais de cinema</span></div>
-      <div class="stat"><b>Premiere</b><span>edição em domínio pleno</span></div>
-      <div class="stat"><b>IA</b><span>generativa e na edição</span></div>
-    </div>
-  </div>
-</section>
 """, "en": None}}
 
 PAGES["trabalhos.html"] = {"key": "work",
  "title": {"pt": "Trabalhos · Carlos Raimundo", "en": None},
- "desc": {"pt": "Trabalhos autorais e filmes feitos para outras produtoras: casamentos, 15 anos, formatura e short form.", "en": None},
+ "desc": {"pt": "Trabalhos autorais e filmes feitos para outras produtoras: casamentos, 15 anos, formatura e verticais.", "en": None},
  "body": {"pt": f"""
 <section class="page-top">
   <div class="glow" style="width:600px;height:600px;right:-200px;top:-200px"></div>
@@ -223,7 +234,7 @@ CATPAGES = [
   ("trabalhos-casamentos.html", "casamentos", "Casamentos", "Para outras produtoras", PARC, "Save the date, prévia, same day e trailer de casamentos que captei e editei.", "", ""),
   ("trabalhos-15-anos.html", "quinze", "15 anos", "Para outras produtoras", PARC, "Save the date, entrada, same day e trailer de festas de 15 anos.", "", ""),
   ("trabalhos-formatura.html", "formatura", "Formatura", "Para outras produtoras", PARC, "Same day editado durante a festa de formatura.", "", ""),
-  ("trabalhos-short-form.html", "shortform", "Short form", "Para outras empresas", "Vídeos verticais feitos para outra empresa. Os clientes são dela.", "Reels e anúncios verticais para tráfego pago e redes.", "", ""),
+  ("trabalhos-verticais.html", "shortform", "Verticais", "Redes", "Vídeos verticais para marcas e redes sociais.", "Reels, anúncios para tráfego pago e vídeos para redes.", "", ""),
 ]
 for fn, cid, title, gl, gd, sub, top, note in CATPAGES:
     PAGES[fn] = {"key": "work", "title": {"pt": f"{title} · Carlos Raimundo", "en": None}, "desc": {"pt": sub, "en": None},
@@ -231,7 +242,7 @@ for fn, cid, title, gl, gd, sub, top, note in CATPAGES:
 
 PAGES["sobre.html"] = {"key": "about",
  "title": {"pt": "Sobre · Carlos Raimundo", "en": None},
- "desc": {"pt": "Carlos Raimundo, filmmaker e editor em Goiânia. Cinema na UEG, mais de 5 anos de mercado, dois prêmios em festivais e IA no fluxo de edição.", "en": None},
+ "desc": {"pt": "Carlos Raimundo, filmmaker e editor em Goiânia. Cinema na UEG, mais de 5 anos de mercado, dois prêmios em festivais e edição em todos os nichos.", "en": None},
  "body": {"pt": f"""
 <section class="page-top">
   <div class="glow" style="width:600px;height:600px;right:-200px;top:-200px"></div>
@@ -247,7 +258,7 @@ PAGES["sobre.html"] = {"key": "about",
       <p>Desde criança eu montava pequenos filmes no MovieMaker com vídeos que achava na internet. Vendo as grandes produções nas telonas, eu sabia que era aquilo que queria fazer.</p>
       <p>Comecei a trabalhar com vídeo pelo celular, postando no Instagram, até passar no vestibular de Cinema e Audiovisual na UEG. Na faculdade fiz documentários e videoclipes que ganharam prêmios em festivais e me mostraram que eu estava no caminho certo.</p>
       <p>Depois passei quase 3 anos numa empresa de foto e filme para casamentos, onde cheguei a liderar o departamento de vídeo: câmera principal, edição dos filmes principais, controle de qualidade e direção dos clientes em cena. Foi ali que desenvolvi minha direção durante a captação, minha linguagem e minha postura profissional.</p>
-      <p>No fim de 2025 decidi seguir por conta própria. Hoje sou freelancer, faço captação e edição sem distinção de nicho, uso IA no fluxo de edição e estou concluindo a graduação em Cinema.</p>
+      <p>No fim de 2025 decidi seguir por conta própria. Hoje sou freelancer, faço captação e edição sem distinção de nicho, uso IA para ampliar o que consigo entregar e estou concluindo a graduação em Cinema.</p>
       <p>É um prazer ter você aqui.</p>
       <p style="margin-top:28px;display:flex;gap:12px;flex-wrap:wrap"><a class="btn" href="carlos-raimundo-curriculo.pdf" target="_blank" rel="noopener">Baixar currículo (PDF)</a><a class="btn ghost" href="orcamento.html">Falar comigo</a></p>
     </div>
@@ -259,7 +270,7 @@ PAGES["sobre.html"] = {"key": "about",
         <li><span class="osd">UEG</span>Cinema e Audiovisual: documentários e videoclipes</li>
         <li><span class="osd">2022</span>Menção honrosa na 12ª MAU com Debaixo da Lona</li>
         <li><span class="osd">2022–2025</span>Empresa de casamentos: de editor júnior a líder do departamento de vídeo</li>
-        <li><span class="osd">FIM DE 2025</span>Freelancer, com IA no fluxo de edição</li>
+        <li><span class="osd">FIM DE 2025</span>Freelancer, captação e edição em todos os nichos</li>
       </ol>
     </div>
   </div>
@@ -270,10 +281,9 @@ PAGES["sobre.html"] = {"key": "about",
     <div class="skills" data-reveal>
       <div class="skill"><b>Adobe Premiere Pro</b><span>Edição em domínio pleno, desde o início da carreira</span></div>
       <div class="skill"><b>After Effects</b><span>Motion graphics para acabamento</span></div>
-      <div class="skill"><b>Edição com IA</b><span>IA no processo de edição para organizar, montar e versionar mais rápido</span></div>
-      <div class="skill"><b>IA generativa</b><span>Ferramentas de imagem e vídeo generativos, como o Adobe Firefly</span></div>
       <div class="skill"><b>Captação</b><span>Câmera profissional e mobile, como câmera principal ou secundária</span></div>
       <div class="skill"><b>Direção de set</b><span>Posição, expressão e cena, inclusive com quem não é ator</span></div>
+      <div class="skill"><b>IA no fluxo</b><span>Ferramentas como o Adobe Firefly e o Claude para organizar, agilizar e ampliar as entregas</span></div>
       <div class="skill"><b>Liderança</b><span>Gestão de equipe de filmagem e de todo o fluxo, da pré à pós</span></div>
       <div class="skill"><b>Atendimento</b><span>Briefing, alinhamento criativo e apresentação das entregas</span></div>
     </div>
@@ -293,7 +303,7 @@ PAGES["sobre.html"] = {"key": "about",
 
 PAGES["servicos.html"] = {"key": "services",
  "title": {"pt": "Serviços · Carlos Raimundo", "en": None},
- "desc": {"pt": "Filmes de casamento e eventos, videoclipes e documentários, reels e anúncios, e edição com IA.", "en": None},
+ "desc": {"pt": "Filmes de casamento e eventos, videoclipes e documentários, reels e anúncios, e edição a distância.", "en": None},
  "body": {"pt": f"""
 <section class="page-top">
   <div class="glow" style="width:600px;height:600px;right:-200px;top:-200px"></div>
@@ -313,9 +323,9 @@ PAGES["servicos.html"] = {"key": "services",
       <a class="btn ghost" href="trabalhos-filmes.html">Ver trabalhos</a></article>
     <article class="service"><div><span class="osd" style="color:var(--ch-b);font-size:1.2rem">● 03</span><h3>Redes e marcas</h3></div>
       <div><p>Vídeos verticais com ritmo para segurar a atenção: reels, anúncios para tráfego pago e conteúdo de marca.</p><div class="tags"><span>Reels</span><span>Shorts</span><span>Anúncios</span><span>Institucional</span></div></div>
-      <a class="btn ghost" href="trabalhos-short-form.html">Ver trabalhos</a></article>
-    <article class="service"><div><span class="osd" style="color:var(--orchid);font-size:1.2rem">● 04</span><h3>Edição com IA</h3></div>
-      <div><p>Edição de vídeo com apoio de inteligência artificial e uso de IA generativa para imagens, elementos e extensões de cena. Dá para contratar só a edição, a distância.</p><div class="tags"><span>Edição remota</span><span>IA generativa</span><span>Versões para redes</span><span>Roteiro e decupagem</span></div></div>
+      <a class="btn ghost" href="trabalhos-verticais.html">Ver trabalhos</a></article>
+    <article class="service"><div><span class="osd" style="color:var(--orchid);font-size:1.2rem">● 04</span><h3>Só a edição</h3></div>
+      <div><p>Já tem o material gravado? Eu edito a distância, em qualquer nicho, com IA no fluxo para organizar o material e entregar versões para cada rede.</p><div class="tags"><span>Edição remota</span><span>Todos os nichos</span><span>Versões para redes</span><span>Roteiro e decupagem</span></div></div>
       <a class="btn ghost" href="orcamento.html">Pedir orçamento</a></article>
   </div>
 </section>
@@ -323,7 +333,7 @@ PAGES["servicos.html"] = {"key": "services",
 
 PAGES["orcamento.html"] = {"key": "quote",
  "title": {"pt": "Orçamento · Carlos Raimundo", "en": None},
- "desc": {"pt": "Peça um orçamento para casamento, evento, videoclipe, documentário, reels ou edição com IA.", "en": None},
+ "desc": {"pt": "Peça um orçamento para casamento, evento, videoclipe, documentário, reels ou só a edição.", "en": None},
  "body": {"pt": f"""
 <section class="page-top">
   <div class="glow" style="width:600px;height:600px;right:-200px;top:-200px"></div>
@@ -340,7 +350,7 @@ PAGES["orcamento.html"] = {"key": "quote",
       <div class="field"><label for="f-email">E-mail</label><input id="f-email" name="email" type="email" required autocomplete="email"></div>
       <div class="field"><label for="f-whats">WhatsApp</label><input id="f-whats" name="whatsapp" type="tel" autocomplete="tel"></div>
       <div class="field"><label for="f-tipo">Tipo de trabalho</label><select id="f-tipo" name="tipo" required>
-        <option value="">Selecione</option><option>Casamento</option><option>Pré-wedding</option><option>15 anos</option><option>Formatura</option><option>Videoclipe</option><option>Documentário ou curta</option><option>Reels e anúncios</option><option>Só edição</option><option>Edição com IA</option><option>Outro</option></select></div>
+        <option value="">Selecione</option><option>Casamento</option><option>Pré-wedding</option><option>15 anos</option><option>Formatura</option><option>Videoclipe</option><option>Documentário ou curta</option><option>Reels e anúncios</option><option>Só edição</option><option>Outro</option></select></div>
       <div class="field"><label for="f-data">Data do evento ou prazo</label><input id="f-data" name="data" placeholder="ex.: 12/04/2027"></div>
       <div class="field"><label for="f-cidade">Cidade</label><input id="f-cidade" name="cidade" placeholder="ex.: Goiânia"></div>
       <div class="field full"><label for="f-inv">Investimento previsto</label><select id="f-inv" name="investimento">
