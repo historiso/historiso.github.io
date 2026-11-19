@@ -11,7 +11,8 @@ const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const S = window.SITE || {}, CATS = window.CATEGORIES || [], WORKS = window.WORKS || [], GROUPS = window.GROUPS || {};
 const catOf = id => CATS.find(c => c.id === id);
-const thumb = id => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
+const thumb = (id, v) => `https://i.ytimg.com/vi/${id}/${v ? "oar2" : "maxresdefault"}.jpg`;
+const thumbFallback = id => `https://i.ytimg.com/vi/${id}/hqdefault.jpg`;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const PLAY = '<svg viewBox="0 0 14 14" aria-hidden="true"><path d="M3 1.5v11l9-5.5z" fill="currentColor"/></svg>';
 
@@ -42,14 +43,20 @@ const menuBtn = $(".menu-btn"), links = $(".links");
 if(menuBtn) menuBtn.addEventListener("click", () => { const o = links.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", o); });
 
 /* ---------- cartões ---------- */
-function imgHTML(id, alt){ return `<img src="${thumb(id)}" alt="${esc(alt)}" loading="lazy" decoding="async" onerror="this.outerHTML='<span class=&quot;fallback&quot;></span>'">`; }
+function imgHTML(id, alt, v, custom){
+  if(custom) return `<img src="${custom}" alt="${esc(alt)}" loading="lazy" decoding="async">`;
+  // a capa grande pode não existir (o YouTube devolve um quadradinho de 120 px): troca pela de 480x360
+  return `<img src="${thumb(id, v)}" alt="${esc(alt)}" loading="lazy" decoding="async" data-fb="${thumbFallback(id)}"
+    onload="if(this.naturalWidth<=120&&this.dataset.fb){this.src=this.dataset.fb;this.removeAttribute('data-fb');this.classList.add('hq')}"
+    onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.removeAttribute('data-fb');this.classList.add('hq')}else{this.outerHTML='<span class=&quot;fallback&quot;></span>'}">`;
+}
 function workCard(w){
   const c = catOf(w.cat), v = c && c.vertical;
   const sub = [tx(w.type), w.artist, w.place].filter(Boolean).join(" · ");
   const b = document.createElement("button");
   b.className = "card" + (v ? " v" : ""); b.dataset.id = w.id;
   b.setAttribute("aria-label", `${L.open}: ${tx(w.title)}, ${sub}`);
-  b.innerHTML = `${imgHTML(w.id, "")}<span class="tint"></span><span class="shade"></span><span class="scan"></span><span class="track"></span>
+  b.innerHTML = `${imgHTML(w.id, "", v, w.thumb)}<span class="tint"></span><span class="shade"></span><span class="scan"></span><span class="track"></span>
     <span class="osdc"><span>▶ PLAY</span><span>${esc(c ? tx(c.title).toUpperCase() : "")}</span></span>
     <span class="play">${PLAY}</span>
     <span class="meta"><span class="pill${c && c.group === "parceiras" ? " dark" : ""}">${esc(tx(w.type))}</span><b>${esc(tx(w.title))}</b><small>${esc([w.artist, w.place, w.award ? "★ " + tx(w.award).split(" · ")[0] : ""].filter(Boolean).join(" · "))}</small></span>`;
@@ -61,7 +68,7 @@ function catCard(c, wide){
   const list = WORKS.filter(w => w.cat === c.id), cover = list[0];
   const a = document.createElement("a");
   a.className = "cat" + (wide ? " wide" : ""); a.href = c.page;
-  a.innerHTML = `${cover ? imgHTML(cover.id, "") : '<span class="fallback"></span>'}<span class="tint"></span><span class="shade"></span><span class="scan"></span><span class="track"></span>
+  a.innerHTML = `${cover ? imgHTML(cover.id, "", c.vertical, cover.thumb) : '<span class="fallback"></span>'}<span class="tint"></span><span class="shade"></span><span class="scan"></span><span class="track"></span>
     <span class="osdc"><span>${c.group !== "parceiras" ? "● REC" : "▶ PLAY"}</span><span>${esc(L.count(list.length).toUpperCase())}</span></span>
     <span class="meta"><span class="pill${c.group === "parceiras" ? " dark" : ""}">${esc(tx(GROUPS[c.group]))}</span><b class="glitch" data-text="${esc(tx(c.title))}">${esc(tx(c.title))}</b><small>${esc(tx(c.sub))}</small></span>`;
   a.addEventListener("pointerenter", () => { track(a); glitch(a.querySelector(".glitch")); });
@@ -171,10 +178,13 @@ if(heroWrap && hero){
     if(tc) tc.textContent = fmt(p * 24);
     if(pct) pct.textContent = `CH 03 · ${Math.round(p * 100)}%`;
   }
-  const loop = () => { render(); requestAnimationFrame(loop); }; loop();
+  let heroOn = true, raf = 0;
+  const loop = () => { render(); raf = heroOn ? requestAnimationFrame(loop) : 0; };
+  new IntersectionObserver(es => { heroOn = es[0].isIntersecting; if(heroOn && !raf) raf = requestAnimationFrame(loop); }).observe(heroWrap);
+  loop();
   measureCaps();
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(measureCaps);
-  addEventListener("resize", measureCaps);
+  let capsW = innerWidth; addEventListener("resize", () => { if(innerWidth === capsW) { last = -1; return; } capsW = innerWidth; measureCaps(); });
   setTimeout(() => lines.forEach((l, i) => setTimeout(() => glitch(l), i * 140)), 350);
   // showreel no fundo (mudo, em loop); só o pôster se "reduzir movimento" ou economia de dados
   const saveData = navigator.connection && navigator.connection.saveData;
@@ -246,11 +256,11 @@ function balanceText(box){
 }
 const balanced = [];
 $$("[data-balance]").forEach(box => balanced.push(() => balanceText(box)));
-$$("[data-cats]").forEach(box => { const wide = box.hasAttribute("data-wide"); balanced.push(() => balance(box, 270, wide ? 10/16 : 5/4, wide ? 380 : 520)); });
-$$("[data-grid]").forEach(box => { const v = box.classList.contains("vertical"); balanced.push(() => balance(box, v ? 220 : 320, v ? 16/9 : 9/16, v ? 640 : 420)); });
+$$("[data-cats]").forEach(box => { const wide = box.hasAttribute("data-wide"); balanced.push(() => { const w = wide || innerWidth < 600; balance(box, 270, w ? 10/16 : 5/4, w ? 380 : 520); }); });
+$$("[data-grid]").forEach(box => { const v = box.classList.contains("vertical"); balanced.push(() => balance(box, v ? (innerWidth < 600 ? 140 : 220) : 320, v ? 16/9 : 9/16, v ? 640 : 420)); });
 const runBalance = () => balanced.forEach(f => f());
 runBalance();
-if(window.ResizeObserver){ let t; new ResizeObserver(() => { cancelAnimationFrame(t); t = requestAnimationFrame(runBalance); }).observe(document.body); }
+if(window.ResizeObserver){ let t, lastW = 0; new ResizeObserver(es => { const w = Math.round(es[0].contentRect.width); if(w === lastW) return; lastW = w; cancelAnimationFrame(t); t = requestAnimationFrame(runBalance); }).observe(document.body); }
 
 /* ---------- largura da fonte no scroll (títulos de seção) ---------- */
 const stretch = $$("h2[data-stretch]");
@@ -276,7 +286,7 @@ if(stretch.length && !reduce){
       el.style.fontVariationSettings = `"wdth" ${(100 + (room.get(el) || 0) * Math.pow(1 - p, 3)).toFixed(1)}`; }); };
   measure();
   if(document.fonts && document.fonts.ready) document.fonts.ready.then(() => { measure(); upd(); });
-  addEventListener("scroll", upd, { passive: true }); addEventListener("resize", () => { measure(); upd(); }); upd();
+  addEventListener("scroll", upd, { passive: true }); let stW = innerWidth; addEventListener("resize", () => { if(innerWidth !== stW){ stW = innerWidth; measure(); } upd(); }); upd();
 }
 
 /* ---------- formulário de orçamento ---------- */

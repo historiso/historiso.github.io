@@ -350,3 +350,16 @@ footer.site{border-top:1px solid var(--line);padding:72px 0 40px;margin-top:40px
 
 /* texto só para leitores de tela e buscadores */
 .sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
+
+/* capa de 480x360 (reserva): corta as faixas pretas que o YouTube coloca em cima e embaixo */
+.card img.hq,.cat img.hq{inset:-12.5% 0;height:125%}
+/* celular: menos espaço entre seções e efeitos mais leves */
+@media(max-width:600px){
+  .sec{padding:72px 0}
+  footer.site{padding:56px 0 32px;margin-top:24px}
+  .page-top{padding:calc(var(--nav-h) + 48px) 0 28px}
+}
+@media(max-width:768px),(hover:none){
+  body::before{animation:none}
+  .nav.solid{backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+}

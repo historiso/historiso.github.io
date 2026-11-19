@@ -138,8 +138,8 @@ PAGES["index.html"] = {"key": "home",
 </div>
 
 <section class="sec bio-sec" aria-label="Sobre mim">
-  <div class="wrap bio">
-    <figure class="bio-photo" data-reveal><img src="assets/img/carlos.jpg" alt="Carlos Raimundo, sentado num sofá de couro durante uma festa à noite, em preto e branco" loading="lazy" decoding="async" width="1000" height="1268"><figcaption class="osd">● REC · CARLOS RAIMUNDO</figcaption></figure>
+  <div class="wrap bio" data-reveal>
+    <figure class="bio-photo"><img src="assets/img/carlos.jpg" alt="Carlos Raimundo, sentado num sofá de couro durante uma festa à noite, em preto e branco" loading="lazy" decoding="async" width="1000" height="1268"><figcaption class="osd">● REC · CARLOS RAIMUNDO</figcaption></figure>
     <div class="bio-text">
       <p class="eyebrow">Sobre</p>
       <h2 data-stretch>{g("Prazer, Carlos")}</h2>

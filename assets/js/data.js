@@ -58,10 +58,10 @@ window.CATEGORIES = [
 ];
 
 /* type: tipo de entrega · title: nome exibido · place: cidade (opcional)
-   role, award, note: opcionais · featured: aparece nos destaques da Home */
+   role, award, note, thumb (capa própria): opcionais · featured: aparece nos destaques da Home */
 window.WORKS = [
   /* ---------- Filmes (autoral) ---------- */
-  { id: "tiFgOgUHBwo", cat: "filmes", featured: 4,
+  { id: "tiFgOgUHBwo", cat: "filmes", featured: 4, thumb: "assets/img/premio-o-que-te-faz-querer.jpg",
     type: { pt: "Videoclipe", en: "Music video" }, title: { pt: "O Que Te Faz Querer", en: "O Que Te Faz Querer" },
     artist: "Actemia", prod: "Clube dos Cinco",
     role: { pt: "Direção, direção de fotografia e montagem", en: "Director, cinematographer and editor" },
